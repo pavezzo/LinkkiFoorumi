@@ -1,10 +1,11 @@
 from app import app
 from flask import render_template, request, redirect, session
 import users
+import links
 
 @app.route("/")
 def index():
-    return "moi"
+    return render_template("index.html")
 
 @app.route("/register")
 def register():
@@ -19,12 +20,28 @@ def register2():
 
     return redirect("/")
 
-
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "GET":
         return render_template("login.html")
     if request.method == "POST":
         if users.login(request.form["username"], request.form["password"]):
-            return "toimii"
+            return redirect("/")
         return "ei toimi"
+
+@app.route("/newlink", methods=["GET", "POST"])
+def newlink():
+    if request.method == "GET":
+        return render_template("newlink.html")
+    if request.method == "POST":
+        link_id = links.new(request.form["title"], request.form["link"])
+        if link_id:
+            return str(link_id)
+        return redirect("/")
+
+@app.route("/link/<int:id>")
+def link(id):
+    result = links.view(id)
+    if result:
+        return render_template("link.html", title=result.title)
+

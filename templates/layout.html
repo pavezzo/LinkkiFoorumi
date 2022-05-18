@@ -1,0 +1,10 @@
+<!DOCTYPE html>
+<title>Linkkifoorumi</title>
+{% if session.name %}
+Logged in as {{ session.name }} id: {{ session.user_id }}
+{% else %}
+<a href="/login">login</a>
+{% endif %}
+<br>
+<a href="/newlink">Post new link</a>
+{% block content %}{% endblock %}

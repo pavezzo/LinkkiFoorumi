@@ -23,8 +23,15 @@ def login(name, password):
         hash = user.password
         if check_password_hash(hash, password):
             session["name"] = name
+            session["user_id"] = user.id
             return True
         else:
             return False
+
+def get_userid(name):
+    sql = "SELECT id FROM users WHERE name=:name"
+    result = db.session.execute(sql, {"name":name})
+    id = result.fetchone()
+    return id[0]
 
     

@@ -37,11 +37,17 @@ def newlink():
         link_id = links.new(request.form["title"], request.form["link"])
         if link_id:
             return str(link_id)
-        return redirect("/")
+        return redirect("/links")
 
 @app.route("/link/<int:id>")
 def link(id):
     result = links.view(id)
     if result:
-        return render_template("link.html", title=result.title)
+        name = users.get_user_by_id(result.user_id)
+        print(result)
+        return render_template("link.html", title=result.title, url=result.url, date=result.created_at, name=name)
 
+@app.route("/links")
+def all_links():
+    results = links.get_all()
+    return render_template("links.html", links=results)

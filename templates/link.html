@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
 <br>
-{{ title }}
+<a href={{ url }} >{{ title }}</a><br>
+Posted at: {{ date }} by {{ name }}
 {% endblock %}

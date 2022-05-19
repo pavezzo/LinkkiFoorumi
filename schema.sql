@@ -10,7 +10,7 @@ CREATE TABLE links (
     user_id INT REFERENCES users,
     url TEXT,
     title TEXT,
-    created_at DATE
+    created_at TIMESTAMP
 );
 
 CREATE TABLE text_posts (

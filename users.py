@@ -34,4 +34,14 @@ def get_userid(name):
     id = result.fetchone()
     return id[0]
 
+def get_user_by_id(id):
+    sql = "SELECT name FROM users WHERE id=:id"
+    result = db.session.execute(sql, {"id":id})
+    user = result.fetchone()
+
+    if not user:
+        return False
+    
+    return user[0]
+
     

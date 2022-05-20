@@ -2,10 +2,16 @@
 <title>Linkkifoorumi</title>
 {% if session.name %}
 Logged in as {{ session.name }} id: {{ session.user_id }}
+<a href="/logout">logout</a>
 {% else %}
 <a href="/login">login</a>
+<a href="/register">register</a>
 {% endif %}
 <br>
-<a href="/newlink">Post a new link</a>
-<a href="/links">All links</a>
+<a href="/newlink">Submit a new link</a>
+<a href="/links">View links</a><br>
+<a href="/newpost">Submit a new text post</a>
+<a href="/posts">View text posts</a>
+<br>
+<a href="/all">View all</a><br>
 {% block content %}{% endblock %}

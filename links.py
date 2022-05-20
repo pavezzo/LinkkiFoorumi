@@ -4,7 +4,7 @@ from flask import request, session
 import users
 
 def new(title, url):
-    if "name" not in session:
+    if "user_id" not in session:
         return False
 
     parsed_url = urlparse(url)
@@ -19,15 +19,18 @@ def new(title, url):
     db.session.commit()
     return link_id
 
-def view(id):
-    sql = "SELECT title, url, user_id, created_at FROM links WHERE link_id=:link_id"
-    result = db.session.execute(sql, {"link_id":id})
+def view(link_id):
+    # TODO:JOIN
+    sql = """SELECT title, url, created_at, name FROM links JOIN users ON user_id=id
+             WHERE link_id=:link_id"""
+    result = db.session.execute(sql, {"link_id":link_id})
     link = result.fetchone()
     if link:
         return link
+    return False
 
 def get_all():
-    sql = "SELECT title, url, created_at FROM links ORDER BY created_at DESC"
+    sql = "SELECT link_id, title, url, created_at FROM links ORDER BY created_at DESC"
     results = db.session.execute(sql)
     links = results.fetchall()
 

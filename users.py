@@ -28,6 +28,10 @@ def login(name, password):
         else:
             return False
 
+def logout():
+    del session["name"]
+    del session["user_id"]
+
 def get_userid(name):
     sql = "SELECT id FROM users WHERE name=:name"
     result = db.session.execute(sql, {"name":name})

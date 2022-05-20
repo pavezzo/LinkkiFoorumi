@@ -1,11 +1,11 @@
 {% extends "layout.html" %}
 {% block content %}
-<h1>Post new link</h1><br>
-<form action="/newlink", method="post">
+<h1>Post a new text post</h1>
+<form action="/newpost", method="post">
     Title:<br>
     <input type="text" name="title"><br>
-    Link:<br>
-    <input type="text" name="link"><br>
+    Post:<br>
+    <textarea name="post_content" rows="10" cols="50"></textarea><br>
     <button>Submit</button>
 </form>
 {% endblock %}

@@ -2,6 +2,7 @@
 {% block content %}
 {% for link in links %}
 <br>
-<a href={{ link.url }}>{{ link.title }}</a>
+<a href={{ link.url }}>{{ link.title }}</a><br>
+<a href="{{ "/link/" ~ link.link_id }}">View link</a><br>
 {% endfor %}
 {% endblock %}

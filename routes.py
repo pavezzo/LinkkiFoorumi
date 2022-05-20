@@ -2,6 +2,8 @@ from app import app
 from flask import render_template, request, redirect, session
 import users
 import links
+import text_posts
+import all
 
 @app.route("/")
 def index():
@@ -29,25 +31,53 @@ def login():
             return redirect("/")
         return "ei toimi"
 
+@app.route("/logout")
+def logout():
+    users.logout()
+    return redirect("/")
+
 @app.route("/newlink", methods=["GET", "POST"])
 def newlink():
     if request.method == "GET":
         return render_template("newlink.html")
     if request.method == "POST":
         link_id = links.new(request.form["title"], request.form["link"])
-        if link_id:
-            return str(link_id)
-        return redirect("/links")
+        return redirect("/link/"+str(link_id))
 
 @app.route("/link/<int:id>")
 def link(id):
     result = links.view(id)
     if result:
-        name = users.get_user_by_id(result.user_id)
-        print(result)
-        return render_template("link.html", title=result.title, url=result.url, date=result.created_at, name=name)
+        return render_template("link.html", title=result.title, url=result.url, date=result.created_at, name=result.name)
 
 @app.route("/links")
 def all_links():
     results = links.get_all()
     return render_template("links.html", links=results)
+
+@app.route("/newpost", methods=["GET", "POST"])
+def new_post():
+    if request.method == "GET":
+        return render_template("newpost.html")
+
+    if request.method == "POST":
+        post_id = text_posts.new(request.form["title"], request.form["post_content"])
+        return str(post_id)
+
+@app.route("/post/<int:id>")
+def post(id):
+    result = text_posts.get(id)
+    if result:
+        return render_template("post.html", title=result.title, post_content=result.post_content,
+                name=result.name, date=result.created_at)
+
+@app.route("/posts")
+def posts():
+    results = text_posts.get_all()
+    print(results)
+    return render_template("posts.html", text_posts=results)
+
+@app.route("/all")
+def all_newest():
+    results = all.get_newest()
+    return render_template("all.html", items=results)

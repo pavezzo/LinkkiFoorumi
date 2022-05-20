@@ -18,14 +18,5 @@ CREATE TABLE text_posts (
     user_id INT REFERENCES users,
     title TEXT,
     post_content TEXT,
-);
-
-CREATE TABLE contents (
-    id SERIAL PRIMARY KEY,
-    CONSTRAINT fk_link
-        FOREIGN KEY(link_id)
-            REFERENCES links(link_id),
-    CONSTRAINT fk_post
-        FOREIGN KEY(post_id)
-            REFERENCES posts(post_id)
+    created_at TIMESTAMP
 );

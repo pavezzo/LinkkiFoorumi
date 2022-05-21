@@ -1,6 +1,22 @@
+{% from "macros.html" import comment_form %}
 {% extends "layout.html" %}
 {% block content %}
 <br>
 <a href={{ url }} >{{ title }}</a><br>
 Posted at: {{ date }} by {{ name }}
+<br>
+{{ comment_form("", link_id, "") }}
+<br>
+{% if comments %}
+{% for item in comments %}
+<div class="comment commentWrapper" parent_id={{ item.parent or "OP" }} id="{{ "comment" ~ item.comment_id }}">
+    <button class="collapseButton" onclick="collapseComments(this)" target_id="{{ "content" ~ item.comment_id }}" target_childs={{ item.comment_id }}>[-]</button>
+    <div class="commentContent" id="{{"content" ~ item.comment_id}}" parent_id={{ item.parent or "OP" }}>
+        {{ item.name }}
+        <p class="commentText">{{ item.comment }}</p>
+        {{ comment_form("", link_id, item.comment_id)}}
+    </div>
+</div>
+{% endfor %}
+{% endif %}
 {% endblock %}

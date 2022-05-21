@@ -20,7 +20,6 @@ def new(title, url):
     return link_id
 
 def view(link_id):
-    # TODO:JOIN
     sql = """SELECT title, url, created_at, name FROM links JOIN users ON user_id=id
              WHERE link_id=:link_id"""
     result = db.session.execute(sql, {"link_id":link_id})

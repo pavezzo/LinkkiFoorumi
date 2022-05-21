@@ -6,6 +6,7 @@
     <input type="text" name="title"><br>
     Post:<br>
     <textarea name="post_content" rows="10" cols="50"></textarea><br>
+    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
     <button>Submit</button>
 </form>
 {% endblock %}

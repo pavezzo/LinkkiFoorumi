@@ -1,0 +1,32 @@
+.commentContent {
+    overflow: hidden;
+    padding-left: 2px;
+    background: rgb(156, 156, 182);
+    opacity: 1;
+}
+
+.commentWrapper {
+    border-style: none;
+    display: block;
+    background: transparent !important;
+}
+
+.childComment {
+    margin-left: 2%;
+}
+
+.btn.btn-outline-secondary {
+    padding: 0px;
+    font-size: x-small;
+}
+
+.collapseButton {
+    font-size: medium;
+    display: inline-block;
+}
+
+.commentText {
+    margin: 0px;
+    margin-bottom: 0.5rem;
+    font-size: larger;
+}

@@ -20,3 +20,13 @@ CREATE TABLE text_posts (
     post_content TEXT,
     created_at TIMESTAMP
 );
+
+CREATE TABLE comments (
+    comment_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users,
+    post_id INT REFERENCES text_posts,
+    link_id INT REFERENCES links,
+    comment TEXT,
+    parent INT REFERENCES comments,
+    created_at TIMESTAMP
+);

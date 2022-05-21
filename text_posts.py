@@ -1,6 +1,7 @@
 from db import db
 from flask import session
 import users
+import utils
 
 def new(title, post_content):
     if "user_id" not in session:

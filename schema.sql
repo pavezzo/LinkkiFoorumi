@@ -8,6 +8,7 @@ CREATE TABLE users (
 CREATE TABLE links (
     link_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users,
+    subforum_id INT REFERENCES subforums,
     url TEXT,
     title TEXT,
     created_at TIMESTAMP
@@ -16,6 +17,7 @@ CREATE TABLE links (
 CREATE TABLE text_posts (
     post_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users,
+    subforum_id INT REFERENCES subforums,
     title TEXT,
     post_content TEXT,
     created_at TIMESTAMP
@@ -33,11 +35,15 @@ CREATE TABLE comments (
 
 CREATE TABLE subforums (
     sub_id SERIAL PRIMARY KEY,
-    creator_id INT REFERENCES users
+    owner_id INT REFERENCES users,
+    sub_name TEXT,
+    introduction TEXT,
+    created_at TIMESTAMP
 );
 
 CREATE TABLE subscriptions (
     subsricption_id SERIAL PRIMARY KEY,
-    user_id INT REFENRENCES users NOT NULL,
+    user_id INT REFERENCES users NOT NULL,
     subforum_id INT REFERENCES subforums NOT NULL,
+    created_at TIMESTAMP
 );

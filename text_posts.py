@@ -3,13 +3,11 @@ from flask import session
 import users
 import utils
 
-def new(title, post_content):
-    if "user_id" not in session:
-        return False
-
-    sql = """INSERT INTO text_posts (user_id, title, post_content, created_at)
-             VALUES (:user_id, :title, :post_content, NOW()) RETURNING post_id"""
-    result = db.session.execute(sql, {"user_id":session["user_id"], "title":title, 
+def new(sub_name, title, post_content):
+    sql = """INSERT INTO text_posts (user_id, subforum_id, title, post_content, created_at)
+             VALUES (:user_id, (SELECT sub_id FROM subforums WHERE sub_name=:sub_name),
+             :title, :post_content, NOW()) RETURNING post_id"""
+    result = db.session.execute(sql, {"user_id":session["user_id"], "sub_name":sub_name, "title":title, 
                                 "post_content":post_content})
     post_id = result.fetchone()[0]
     db.session.commit()

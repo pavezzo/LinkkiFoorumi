@@ -3,18 +3,17 @@ from db import db
 from flask import request, session
 import users
 
-def new(title, url):
-    if "user_id" not in session:
-        return False
-
+def new(sub_name, title, url):
     parsed_url = urlparse(url)
 
     if not parsed_url.scheme:
         url = "https://" + url
 
-    sql = """INSERT INTO links (user_id, url, title, created_at)
-             VALUES (:user_id, :url, :title, NOW()) RETURNING link_id"""
-    result = db.session.execute(sql, {"user_id":session["user_id"], "url":url, "title":title})
+    sql = """INSERT INTO links (user_id, subforum_id, url, title, created_at)
+             VALUES (:user_id, (SELECT sub_id FROM subforums WHERE sub_name=:sub_name), 
+             :url, :title, NOW()) 
+             RETURNING link_id"""
+    result = db.session.execute(sql, {"user_id":session["user_id"], "sub_name":sub_name, "url":url, "title":title})
     link_id = result.fetchone()[0]
     db.session.commit()
     return link_id

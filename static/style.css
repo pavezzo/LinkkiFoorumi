@@ -41,3 +41,11 @@
     margin-bottom: 0.5rem;
     font-size: larger;
 }
+
+.sideContent {
+    float: right;
+    margin: 2%;
+    padding: 1%;
+    border-style: solid;
+    border-radius: 10%;
+}

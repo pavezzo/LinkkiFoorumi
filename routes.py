@@ -6,6 +6,7 @@ import text_posts
 import all
 import utils
 import comments
+import subforums
 
 @app.route("/", methods=["GET"])
 def index():
@@ -41,11 +42,11 @@ def logout():
 @app.route("/newlink", methods=["GET", "POST"])
 def newlink():
     if request.method == "GET":
-        return render_template("newlink.html")
+        return render_template("newlink.html", sub_name=request.args.get("subforum"))
     if request.method == "POST":
-        if not utils.valid_csrf(request.form["csrf_token"]):
-            abort(403)
-        link_id = links.new(request.form["title"], request.form["link"])
+        utils.valid_csrf(request.form["csrf_token"])
+        utils.require_login()
+        link_id = links.new(request.form["sub_name"], request.form["title"], request.form["link"])
         return redirect("/link/"+str(link_id))
 
 @app.route("/link/<int:id>")
@@ -64,12 +65,13 @@ def all_links():
 @app.route("/newpost", methods=["GET", "POST"])
 def new_post():
     if request.method == "GET":
-        return render_template("newpost.html")
+        return render_template("newpost.html", sub_name=request.args.get("subforum"))
 
     if request.method == "POST":
-        if not utils.valid_csrf(request.form["csrf_token"]):
-            abort(403)
-        post_id = text_posts.new(request.form["title"], request.form["post_content"])
+        utils.valid_csrf(request.form["csrf_token"])
+        utils.require_login()
+        post_id = text_posts.new(request.form["sub_name"], request.form["title"], request.form["post_content"])
+        
         return str(post_id)
 
 @app.route("/post/<int:id>")
@@ -102,4 +104,21 @@ def new_comment():
     if request.form["post_id"]:
         post_url = "/post/" + request.form["post_id"]
         return redirect(post_url)
-    
+
+@app.route("/newsubforum", methods=["GET", "POST"])
+def new_subforum():
+    if request.method == "GET":
+        return render_template("newsubforum.html")
+    if request.method == "POST":
+        utils.require_login()
+        utils.valid_csrf(request.form["csrf_token"])
+        if subforums.new(request.form["sub_name"], request.form["introduction"]):
+            return redirect("/")
+
+@app.route("/sub/<string:name>")
+def view_subforum(name):
+    result = subforums.get_by_name(name)
+    if not result:
+        abort(404)
+    contents = subforums.get_newest(result.sub_id)
+    return render_template("subforum.html", sub_name=name, introduction=result.introduction, contents=contents)

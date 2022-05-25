@@ -14,12 +14,23 @@ Logged in as {{ session.name }} id: {{ session.user_id }}
 <a href="/register">register</a>
 {% endif %}
 <br>
-<a href="/newlink">Submit a new link</a>
 <a href="/links">View links</a><br>
-<a href="/newpost">Submit a new text post</a>
 <a href="/posts">View text posts</a>
 <br>
-<a href="/all">View all</a><br>
+<a href="/all">View all</a>
+{% if not comments %}
+<div class="sideContent">
+    {% if sub_name %}
+    <a href="{{ url_for('newlink', subforum=sub_name) }}">Submit a new link</a><br>
+    <a href="{{ url_for('new_post', subforum=sub_name) }}">Submit a new text post</a><br>
+    {% else %}
+    <a href="/newlink">Submit a new link</a><br>
+    <a href="/newpost">Submit a new text post</a><br>
+    {% endif %}
+    <a href="/newsubforum">Create a new subforum</a>
+</div>
+{% endif %}
+<br>
 <script src="/static/script.js"></script>
 {% block content %}{% endblock %}
 </body>

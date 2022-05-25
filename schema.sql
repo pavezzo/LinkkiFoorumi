@@ -30,3 +30,14 @@ CREATE TABLE comments (
     parent INT REFERENCES comments,
     created_at TIMESTAMP
 );
+
+CREATE TABLE subforums (
+    sub_id SERIAL PRIMARY KEY,
+    creator_id INT REFERENCES users
+);
+
+CREATE TABLE subscriptions (
+    subsricption_id SERIAL PRIMARY KEY,
+    user_id INT REFENRENCES users NOT NULL,
+    subforum_id INT REFERENCES subforums NOT NULL,
+);

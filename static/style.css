@@ -1,7 +1,6 @@
 .commentContent {
-    overflow: hidden;
     padding-left: 2px;
-    background: rgb(156, 156, 182);
+    background: lightgreen;
     opacity: 1;
 }
 
@@ -9,6 +8,7 @@
     border-style: none;
     display: block;
     background: transparent !important;
+    padding-top: 0.5%;
 }
 
 .childComment {
@@ -17,12 +17,23 @@
 
 .btn.btn-outline-secondary {
     padding: 0px;
-    font-size: x-small;
+    font-size: small;
+    color: black;
+}
+
+.replyButton {
+    font-size: small;
+    color: black;
+    text-decoration: none;
+}
+
+.nameBar {
+    background: lightgreen;
 }
 
 .collapseButton {
     font-size: medium;
-    display: inline-block;
+    text-decoration: none;
 }
 
 .commentText {

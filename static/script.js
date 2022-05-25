@@ -35,7 +35,6 @@ function collapseComments(e) {
             child.style.display = 'block'
         }
         e.innerHTML = "[-]"
-
     } else {
         target.style.display = 'none'
         for (let child of childs) {

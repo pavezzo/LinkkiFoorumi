@@ -75,9 +75,10 @@ def new_post():
 @app.route("/post/<int:id>")
 def post(id):
     result = text_posts.get(id)
+    comms = comments.get_for_post(id)
     if result:
-        return render_template("post.html", title=result.title, post_content=result.post_content,
-                name=result.name, date=result.created_at)
+        return render_template("post.html", post_id=id, title=result.title, post_content=result.post_content,
+                name=result.name, date=result.created_at, comments=comms)
 
 @app.route("/posts")
 def posts():
@@ -98,4 +99,7 @@ def new_comment():
     if request.form["link_id"]:
         link_url = "/link/" + request.form["link_id"]
         return redirect(link_url)
+    if request.form["post_id"]:
+        post_url = "/post/" + request.form["post_id"]
+        return redirect(post_url)
     

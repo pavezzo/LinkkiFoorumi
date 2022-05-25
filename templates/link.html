@@ -9,10 +9,13 @@ Posted at: {{ date }} by {{ name }}
 <br>
 {% if comments %}
 {% for item in comments %}
-<div class="comment commentWrapper" parent_id={{ item.parent or "OP" }} id="{{ "comment" ~ item.comment_id }}">
-    <button class="collapseButton" onclick="collapseComments(this)" target_id="{{ "content" ~ item.comment_id }}" target_childs={{ item.comment_id }}>[-]</button>
-    <div class="commentContent" id="{{"content" ~ item.comment_id}}" parent_id={{ item.parent or "OP" }}>
-        {{ item.name }}
+<div class="comment commentWrapper" parent_id={{ item.parent or "OP" }} id="{{ "comment" ~ item.comment_id }}" comment_id={{ item.comment_id }}>
+    <div class="nameBar">
+        <a href="javascript:void(0)" class="collapseButton" onclick="collapseComments(this)" target_id="{{ "content" ~ item.comment_id }}" target_childs={{ item.comment_id }}>[-]</a>
+        <span>{{ item.name }}</span>
+        <span>{{ item.created_at}}</span>
+    </div>
+    <div class="commentContent" id="{{"content" ~ item.comment_id}}">
         <p class="commentText">{{ item.comment }}</p>
         {{ comment_form("", link_id, item.comment_id)}}
     </div>

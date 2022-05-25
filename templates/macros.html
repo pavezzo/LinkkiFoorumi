@@ -1,20 +1,22 @@
 {% macro comment_form(post_id, link_id, parent) %}
     {% if parent %}
-        <button class="btn btn-outline-secondary" onclick="showCommentForm(this)" target_id={{ parent }}>Reply</button>
+        <a href="javascript:void(0)" class="replyButton" onclick="showCommentForm(this)" target_id={{ parent }}>Reply</a>
         <form style="display: none;" action="/newcomment" method="post" id={{ parent }}>
-            <textarea name="comment"></textarea>
+            <textarea name="comment" rows="5" cols="40"></textarea>
             <input type="hidden" name="post_id" value={{ post_id }}>
             <input type="hidden" name="link_id" value={{ link_id }}>
-            <input type="hidden" name="parent" value={{ parent }}><br>
-        <button class="btn btn-outline-secondary">Submit</button>
+            <input type="hidden" name="parent" value={{ parent }}>
+            <input type="hidden" name="csrf_token" value={{ session.csrf_token }}><br>
+            <button class="btn btn-outline-secondary">Submit</button>
         </form>
     {% else %}
-        <button class="btn btn-outline-secondary" onclick="showCommentForm(this)" target_id="OP">Reply</button>
+        <a href="javascript:void(0)" class="replyButton" onclick="showCommentForm(this)" target_id="OP">Reply</a>
         <form style="display: none;" action="/newcomment" method="post" id="OP">
-            <textarea name="comment"></textarea>
+            <textarea name="comment" rows="5" cols="40"></textarea>
             <input type="hidden" name="post_id" value={{ post_id }}>
             <input type="hidden" name="link_id" value={{ link_id }}>
-            <input type="hidden" name="parent" value={{ comment_id }}><br>
+            <input type="hidden" name="parent" value={{ comment_id }}>
+            <input type="hidden" name="csrf-token" value={{ session.csrf_token }}><br>
             <button class="btn btn-outline-secondary">Submit</button>
         </form>
     {% endif %}

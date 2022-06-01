@@ -7,10 +7,12 @@ import all
 import utils
 import comments
 import subforums
+import subscriptions
 
 @app.route("/", methods=["GET"])
 def index():
-    return render_template("index.html")
+    results = subscriptions.get_users_content()
+    return render_template("all.html", items=results)
 
 @app.route("/register")
 def register():
@@ -88,14 +90,15 @@ def posts():
     print(results)
     return render_template("posts.html", text_posts=results)
 
-@app.route("/all")
+@app.route("/sub/all")
 def all_newest():
     results = all.get_newest()
     return render_template("all.html", items=results)
 
 @app.route("/newcomment", methods=["POST"])
 def new_comment():
-    print(request.form)
+    utils.require_login()
+    utils.valid_csrf(request.form["csrf_token"])
     comments.new(request.form["link_id"], request.form["post_id"], request.form["parent"],
                 request.form["comment"])
     if request.form["link_id"]:
@@ -118,7 +121,22 @@ def new_subforum():
 @app.route("/sub/<string:name>")
 def view_subforum(name):
     result = subforums.get_by_name(name)
+    subbed = subscriptions.check_subscription(result.sub_id)
     if not result:
         abort(404)
     contents = subforums.get_newest(result.sub_id)
-    return render_template("subforum.html", sub_name=name, introduction=result.introduction, contents=contents)
+    return render_template("subforum.html", subforum_id=result.sub_id, sub_name=name, introduction=result.introduction, contents=contents, subbed=subbed)
+
+@app.route("/newsubscription", methods=["post"])
+def new_subscription():
+    utils.require_login()
+    utils.valid_csrf(request.form["csrf_token"])
+    subscriptions.new(request.form["subforum_id"])
+    url = "/sub/" + request.form["subforum"]
+    return redirect(url)
+
+@app.route("/subscriptions", methods=["get"])
+def show_subscriptions():
+    utils.require_login()
+    subforums = subscriptions.get_users_subscriptions()
+    return render_template("subscriptions.html", subforums=subforums)

@@ -1,5 +1,6 @@
 {% extends "layout.html" %}
 {% block content %}
+{% if items %}
 {% for item in items %}
 {% if item.link_id %}
 <br>
@@ -11,4 +12,5 @@
 <br>
 {% endif %}
 {% endfor %}
+{% endif %}
 {% endblock %}

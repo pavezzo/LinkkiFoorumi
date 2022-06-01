@@ -42,7 +42,7 @@ CREATE TABLE subforums (
 );
 
 CREATE TABLE subscriptions (
-    subsricption_id SERIAL PRIMARY KEY,
+    subscription_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users NOT NULL,
     subforum_id INT REFERENCES subforums NOT NULL,
     created_at TIMESTAMP

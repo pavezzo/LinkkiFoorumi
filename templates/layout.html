@@ -6,6 +6,7 @@
 <body onload="styleComments()">
 {% endif %}
 <title>Linkkifoorumi</title>
+<a href="/">Linkkifoorumi</a><br>
 {% if session.name %}
 Logged in as {{ session.name }} id: {{ session.user_id }}
 <a href="/logout">logout</a>
@@ -14,10 +15,8 @@ Logged in as {{ session.name }} id: {{ session.user_id }}
 <a href="/register">register</a>
 {% endif %}
 <br>
-<a href="/links">View links</a><br>
-<a href="/posts">View text posts</a>
-<br>
-<a href="/all">View all</a>
+<a href="/subscriptions">View your subscriptions</a><br>
+<a href="/sub/all">View all</a>
 {% if not comments %}
 <div class="sideContent">
     {% if sub_name %}

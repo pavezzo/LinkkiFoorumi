@@ -15,8 +15,9 @@ def new(name, introduction):
     return True
 
 def get_by_name(name):
-    sql = """SELECT sub_id, owner_id, introduction, created_at, name FROM subforums
-             JOIN users ON owner_id=id WHERE sub_name=:sub_name"""
+    sql = """SELECT sub_id, owner_id, introduction, name FROM subforums
+             JOIN users ON owner_id=id
+             WHERE sub_name=:sub_name"""
     result = db.session.execute(sql, {"sub_name":name})
     subforum = result.fetchone()
     if subforum:

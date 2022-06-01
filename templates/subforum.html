@@ -2,6 +2,16 @@
 {% block content %}
 <h1>{{ sub_name }}</h1>
 <p>{{ introduction }}</p>
+<form action="/newsubscription" method="post">
+    <input type="hidden" name="subforum_id" value={{ subforum_id }}>
+    <input type="hidden" name="subforum" value={{ sub_name }}>
+    <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
+    {% if not subbed %}
+    <button>Subscribe</button>
+    {% else %}
+    <button>Unsubscribe</button>
+    {% endif %}
+</form>
 {% for item in contents %}
 {% if item.link_id %}
 <br>

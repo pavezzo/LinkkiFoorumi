@@ -1,0 +1,7 @@
+{% extends "layout.html" %}
+{% block content %}
+<br>
+{% for subforum in subforums %}
+<a href="{{ "/sub/" ~ subforum.sub_name }}">{{subforum.sub_name}}</a><br>
+{% endfor %}
+{% endblock %}

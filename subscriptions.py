@@ -7,6 +7,11 @@ def new(subforum_id):
     db.session.execute(sql, {"user_id":session["user_id"], "subforum_id":subforum_id})
     db.session.commit()
 
+def unsubscribe(subforum_id):
+    sql = "DELETE FROM subscriptions WHERE user_id=:user_id AND subforum_id=:subforum_id"
+    db.session.execute(sql, {"user_id":session["user_id"], "subforum_id":subforum_id})
+    db.session.commit()
+
 def check_subscription(subforum_id):
     if "user_id" not in session:
         return False
@@ -33,11 +38,24 @@ def get_users_content():
     if "user_id" not in session:
         return False
 
-    sql = """SELECT link_id, NULL AS post_id, title, url, created_at FROM links
+    sql = """SELECT links.link_id, NULL AS post_id, title, url, links.created_at, count(comment_id) AS count_comments,
+             (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
+             FROM likes WHERE likes.link_id=links.link_id) AS count_likes,
+             sub_name
+             FROM links
+             LEFT JOIN comments ON comments.link_id=links.link_id
+             JOIN subforums ON subforums.sub_id=links.subforum_id
              WHERE links.subforum_id IN (SELECT subforum_id FROM subscriptions WHERE user_id=:user_id)
-             UNION SELECT NULL AS link_id, post_id, title, NULL AS url, created_at
+             GROUP BY links.link_id, sub_name
+             UNION SELECT NULL AS link_id, text_posts.post_id, title, NULL AS url, text_posts.created_at, count(comment_id) AS count_comments,
+             (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
+             FROM likes WHERE likes.post_id=text_posts.post_id) AS count_likes,
+             sub_name
              FROM text_posts
+             LEFT JOIN comments ON comments.post_id=text_posts.post_id
+             JOIN subforums ON subforums.sub_id=text_posts.subforum_id
              WHERE text_posts.subforum_id IN (SELECT subforum_id FROM subscriptions WHERE user_id=:user_id)
+             GROUP BY text_posts.post_id, sub_name
              ORDER BY created_at DESC"""
     results = db.session.execute(sql, {"user_id":session["user_id"]}).fetchall()
     return results

@@ -25,10 +25,21 @@ def get_by_name(name):
     return False
 
 def get_newest(subforum_id):
-    sql = """SELECT link_id, NULL AS post_id, title, url, created_at FROM links
+    sql = """SELECT links.link_id, NULL AS post_id, title, url, links.created_at, count(comment_id) AS count_comments,
+             (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
+             FROM likes WHERE likes.link_id=links.link_id) AS count_likes
+             FROM links
+             LEFT JOIN comments ON comments.link_id=links.link_id
              WHERE subforum_id=:subforum_id
-             UNION SELECT NULL AS link_id, post_id, title, NULL AS url, created_at
-             FROM text_posts WHERE subforum_id=:subforum_id
+             GROUP BY links.link_id
+             UNION SELECT NULL AS link_id, text_posts.post_id, title, NULL AS url, text_posts.created_at, 
+             count(comment_id) AS count_comments,
+             (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
+             FROM likes WHERE likes.post_id=text_posts.post_id) AS count_likes
+             FROM text_posts 
+             LEFT JOIN comments ON comments.post_id=text_posts.post_id
+             WHERE subforum_id=:subforum_id
+             GROUP BY text_posts.post_id
              ORDER BY created_at DESC"""
     results = db.session.execute(sql, {"subforum_id":subforum_id})
     contents = results.fetchall()

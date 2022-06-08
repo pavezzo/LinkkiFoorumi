@@ -8,6 +8,7 @@ import utils
 import comments
 import subforums
 import subscriptions
+import likes
 
 @app.route("/", methods=["GET"])
 def index():
@@ -135,8 +136,23 @@ def new_subscription():
     url = "/sub/" + request.form["subforum"]
     return redirect(url)
 
+@app.route("/unsubscribe", methods=["post"])
+def unsubscribe():
+    utils.require_login()
+    utils.valid_csrf(request.form["csrf_token"])
+    subscriptions.unsubscribe(request.form["subforum_id"])
+    url = "/sub/" + request.form["subforum"]
+    return redirect(url)
+
 @app.route("/subscriptions", methods=["get"])
 def show_subscriptions():
     utils.require_login()
     subforums = subscriptions.get_users_subscriptions()
     return render_template("subscriptions.html", subforums=subforums)
+
+@app.route("/newlike", methods=["post"])
+def newlike():
+    utils.require_login()
+    utils.valid_csrf(request.form["csrf_token"])
+    likes.new(request.form["positive"], request.form["link_id"], request.form["post_id"], request.form["comment_id"])
+    return redirect("/")

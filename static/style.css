@@ -9,6 +9,7 @@
     display: block;
     background: transparent !important;
     padding-top: 0.5%;
+    overflow: hidden;
 }
 
 .childComment {
@@ -48,4 +49,9 @@
     padding: 1%;
     border-style: solid;
     border-radius: 10%;
+}
+
+.likeButtons {
+    float: left;
+    overflow: hidden;
 }

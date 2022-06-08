@@ -1,6 +1,8 @@
 from flask import session, abort
 
-def valid_csrf(token):
+def valid_csrf(token=None):
+    if not token:
+        abort(403)
     if "csrf_token" not in session:
         abort(403)
     if not session["csrf_token"] == token:

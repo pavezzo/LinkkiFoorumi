@@ -1,4 +1,4 @@
-{% from "macros.html" import comment_form %}
+{% from "macros.html" import comment_form, like %}
 {% extends "layout.html" %}
 {% block content %}
 <h1>{{ title }}</h1>
@@ -8,14 +8,17 @@ Posted at: {{ date }} by {{ name }}
 <br>
 {% if comments %}
 {% for item in comments %}
+
 <div class="comment commentWrapper" parent_id={{ item.parent or "OP" }} id="{{ "comment" ~ item.comment_id }}" comment_id={{ item.comment_id }}>
     <div class="nameBar">
         <a href="javascript:void(0)" class="collapseButton" onclick="collapseComments(this)" target_id="{{ "content" ~ item.comment_id }}" target_childs={{ item.comment_id }}>[-]</a>
         <span>{{ item.name }}</span>
         <span>{{ item.created_at}}</span>
+        <span>{{ item.count_likes}} likes</span>
     </div>
     <div class="commentContent" id="{{"content" ~ item.comment_id}}">
         <p class="commentText">{{ item.comment }}</p>
+        {{ like("", "", item.comment_id)}}
         {{ comment_form(post_id, "", item.comment_id)}}
     </div>
 </div>

@@ -47,3 +47,12 @@ CREATE TABLE subscriptions (
     subforum_id INT REFERENCES subforums NOT NULL,
     created_at TIMESTAMP
 );
+
+CREATE TABLE likes (
+    like_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES users NOT NULL,
+    link_id INT REFERENCES links,
+    post_id INT REFERENCES text_posts,
+    comment_id INT REFERENCES comments,
+    positive BOOLEAN
+);

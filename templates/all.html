@@ -1,16 +1,38 @@
 {% extends "layout.html" %}
-{% from "macros.html" import link, post, like %}
+{% from "macros.html" import link, post, like with context%}
 {% block content %}
+{% if index %}
+<span>
+    <a href="{{ "/" }}">new</a>
+</span>
+<span>
+    <a href="{{ "/top" }}">top</a>
+</span>
+{% else %}
+<span>
+    <a href="{{ "/sub/all" }}">new</a>
+</span>
+<span>
+    <a href="{{ "/sub/all/top" }}">top</a>
+</span>
+{% endif %}
 {% if items %}
+<div class="list-group">
 {% for item in items %}
-    <br>
-    {% if item.link_id %}
-        {{ like(item.link_id, "", "") }}
-        {{ link(item.link_id, item.url, item.title, item.count_comments, item.count_likes, item.sub_name) }}
-    {% else %}
-        {{ like("", item.post_id, "") }}
-        {{ post(item.post_id, item.title, item.count_comments, item.count_likes, item.sub_name) }}
-    {% endif %}
+    <div class="list-group-item">
+        <div class="container-fluid">
+            <div class="row">
+                {% if item.link_id %}
+                    {{ like(item.link_id, "", "", item.count_likes) }}
+                    {{ link(item) }}
+                {% else %}
+                    {{ like("", item.post_id, "", item.count_likes) }}
+                    {{ post(item) }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 {% endfor %}
+</div>
 {% endif %}
 {% endblock %}

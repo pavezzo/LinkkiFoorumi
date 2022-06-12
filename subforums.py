@@ -27,20 +27,49 @@ def get_by_name(name):
 def get_newest(subforum_id):
     sql = """SELECT links.link_id, NULL AS post_id, title, url, links.created_at, count(comment_id) AS count_comments,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
-             FROM likes WHERE likes.link_id=links.link_id) AS count_likes
+             FROM likes WHERE likes.link_id=links.link_id) AS count_likes,
+             users.name
              FROM links
              LEFT JOIN comments ON comments.link_id=links.link_id
+             JOIN users ON users.id=links.user_id
              WHERE subforum_id=:subforum_id
-             GROUP BY links.link_id
+             GROUP BY links.link_id, users.name
              UNION SELECT NULL AS link_id, text_posts.post_id, title, NULL AS url, text_posts.created_at, 
              count(comment_id) AS count_comments,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
-             FROM likes WHERE likes.post_id=text_posts.post_id) AS count_likes
+             FROM likes WHERE likes.post_id=text_posts.post_id) AS count_likes,
+             users.name
              FROM text_posts 
              LEFT JOIN comments ON comments.post_id=text_posts.post_id
+             JOIN users ON users.id=text_posts.user_id
              WHERE subforum_id=:subforum_id
-             GROUP BY text_posts.post_id
+             GROUP BY text_posts.post_id, users.name
              ORDER BY created_at DESC"""
+    results = db.session.execute(sql, {"subforum_id":subforum_id})
+    contents = results.fetchall()
+    return contents
+
+def get_top(subforum_id):
+    sql = """SELECT links.link_id, NULL AS post_id, title, url, links.created_at, count(comment_id) AS count_comments,
+             (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
+             FROM likes WHERE likes.link_id=links.link_id) AS count_likes,
+             users.name
+             FROM links
+             LEFT JOIN comments ON comments.link_id=links.link_id
+             JOIN users ON users.id=links.user_id
+             WHERE subforum_id=:subforum_id
+             GROUP BY links.link_id, users.name
+             UNION SELECT NULL AS link_id, text_posts.post_id, title, NULL AS url, text_posts.created_at, 
+             count(comment_id) AS count_comments,
+             (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
+             FROM likes WHERE likes.post_id=text_posts.post_id) AS count_likes,
+             users.name
+             FROM text_posts 
+             LEFT JOIN comments ON comments.post_id=text_posts.post_id
+             JOIN users ON users.id=text_posts.user_id
+             WHERE subforum_id=:subforum_id
+             GROUP BY text_posts.post_id, users.name
+             ORDER BY count_likes DESC"""
     results = db.session.execute(sql, {"subforum_id":subforum_id})
     contents = results.fetchall()
     return contents

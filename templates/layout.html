@@ -2,21 +2,35 @@
 <!-- CSS only -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-0evHe/X+R7YkIZDRvuzKMRqM+OrBnVFBL6DOitfPri4tjfHxaWutUpFmBp4vmVor" crossorigin="anonymous">
 <link rel="stylesheet" href="/static/style.css">
+<script src="/static/script.js"></script>
 {% if comments %}
 <body onload="styleComments()">
 {% endif %}
-<title>Linkkifoorumi</title>
-<a href="/">Linkkifoorumi</a><br>
-{% if session.name %}
-Logged in as {{ session.name }} id: {{ session.user_id }}
-<a href="/logout">logout</a>
-{% else %}
-<a href="/login">login</a>
-<a href="/register">register</a>
-{% endif %}
-<br>
-<a href="/subscriptions">View your subscriptions</a><br>
-<a href="/sub/all">View all</a>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand" href="/">Linkkifoorumi</a>
+    <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+            <li class="nav-item">
+                <a class="nav-link" href="/sub/all">sub/all</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/subscriptions">your subscriptions</a>
+            </li>
+            <li class="nav-item">
+        {% if session.name %}
+                <a class="nav-link" href="/logout">logout</a>
+        {% else %}
+                <a class="nav-link" href="/login">login</a>
+            <li class="nav-item">
+                <a class="nav-link" href="/register">register</a>
+            </li>
+        {% endif %}
+            </li>
+        </ul>
+    </div>
+</nav>
+
 {% if not comments %}
 <div class="sideContent">
     {% if sub_name %}
@@ -29,7 +43,5 @@ Logged in as {{ session.name }} id: {{ session.user_id }}
     <a href="/newsubforum">Create a new subforum</a>
 </div>
 {% endif %}
-<br>
-<script src="/static/script.js"></script>
 {% block content %}{% endblock %}
 </body>

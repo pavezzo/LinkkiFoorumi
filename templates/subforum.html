@@ -1,4 +1,4 @@
-{% from "macros.html" import link, post, like %}
+{% from "macros.html" import link, post, like with context%}
 {% extends "layout.html" %}
 {% block content %}
 <h1>{{ sub_name }}</h1>
@@ -17,14 +17,24 @@
     <button>Unsubscribe</button>
     {% endif %}
 </form>
+<span><a href="{{ "/sub/" ~ sub_name }}">new</a></span>
+<span><a href="{{ "/sub/" ~ sub_name ~ "/top" }}">top</a></span>
+<div class="list-group">
 {% for item in contents %}
-<br>
-{% if item.link_id %}
-    {{ like(item.link_id, "", "") }}
-    {{ link(item.link_id, item.url, item.title, item.count_comments, item.count_likes) }}
-{% else %}
-    {{ like("", item.post_id, "")}}
-    {{ post(item.post_id, item.title, item.count_comments, item.count_likes)}}
-{% endif %}
+    <div class="list-group-item">
+    <div class="container-fluid">
+    <div class="row">
+    {% if item.link_id %}
+        {{ like(item.link_id, "", "", item.count_likes) }}
+        {{ link(item) }}
+    {% else %}
+        {{ like("", item.post_id, "", item.count_likes)}}
+        {{ post(item)}}
+
+    {% endif %}
+    </div>
+    </div>
+    </div>
 {% endfor %}
+</div>
 {% endblock %}

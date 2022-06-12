@@ -13,7 +13,12 @@ import likes
 @app.route("/", methods=["GET"])
 def index():
     results = subscriptions.get_users_content()
-    return render_template("all.html", items=results)
+    return render_template("all.html", items=results, index=True)
+
+@app.route("/top", methods=["GET"])
+def index_top():
+    results = subscriptions.get_users_content_top()
+    return render_template("all.html", items=results, index=True)
 
 @app.route("/register")
 def register():
@@ -96,6 +101,11 @@ def all_newest():
     results = all.get_newest()
     return render_template("all.html", items=results)
 
+@app.route("/sub/all/top")
+def all_top():
+    results = all.get_most_liked()
+    return render_template("all.html", items=results)
+
 @app.route("/newcomment", methods=["POST"])
 def new_comment():
     utils.require_login()
@@ -127,6 +137,16 @@ def view_subforum(name):
         abort(404)
     contents = subforums.get_newest(result.sub_id)
     return render_template("subforum.html", subforum_id=result.sub_id, sub_name=name, introduction=result.introduction, contents=contents, subbed=subbed)
+
+@app.route("/sub/<string:name>/top")
+def view_subforum_top(name):
+    result = subforums.get_by_name(name)
+    subbed = subscriptions.check_subscription(result.sub_id)
+    if not result:
+        abort(404)
+    contents = subforums.get_top(result.sub_id)
+    return render_template("subforum.html", subforum_id=result.sub_id, sub_name=name, introduction=result.introduction, contents=contents, subbed=subbed)
+
 
 @app.route("/newsubscription", methods=["post"])
 def new_subscription():

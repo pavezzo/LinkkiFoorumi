@@ -22,43 +22,58 @@
     {% endif %}
 {% endmacro %}
 
-{% macro link(link_id, url, title, comments, likes, subforum) %}
-    <div class="link">
-        <a href={{ url }}>{{ title }}</a><br>
-        {% if subforum %}
-        <a href="{{ "/sub/" ~ subforum }}">{{ "Posted on sub/" ~ subforum }}</a><br>
-        {% endif %}
-        <a href="{{ "/link/"  ~ link_id}}">{{ comments ~ " comments"}}</a><br>
-        <p>{{ likes ~ " likes" }}</p><br>
+{% macro link(item) %}
+    <div class="col-md-auto">
+        <div class="link">
+            <a href={{ item.url }} style="font-size: larger;">{{ item.title }}</a><br>
+            <p style="font-size: small; margin: 0px;">
+            {% if item.sub_name %}
+                Submitted to: <a href="{{ "/sub/" ~ item.sub_name }}">{{ "sub/" ~ item.sub_name }}</a>
+            {% endif %}
+                {{ timeSince(item.created_at) }}
+                by {{ item.name }}
+            </p>
+            <a href="{{ "/link/"  ~ item.link_id}}" style="font-size: small;">{{ item.count_comments ~ " comments"}}</a>
+        </div>
     </div>
 {% endmacro %}
 
-{% macro post(post_id, title, comments, likes, subforum) %}
-    <div class="post">
-        <a href="{{ "/post/" ~ post_id }}">{{ title }}</a><br>
-        {% if subforum %}
-        <a href="{{ "/sub/" ~ subforum }}">{{ "Posted on sub/" ~ subforum }}</a><br>
-        {% endif %}
-        <a href="{{ "/post/" ~ post_id }}">{{ comments ~ " comments"}}</a><br>
-        <p>{{ likes ~ " likes" }}</p><br>
+{% macro post(item) %}
+    <div class="col-md-auto">
+        <div class="post">
+            <a href="{{ "/post/" ~ item.post_id }}" style="font-size: larger;">{{ item.title }}</a><br>
+            <p style="font-size: small; margin: 0px;">
+            {% if item.sub_name %}
+                Submitted to: <a href="{{ "/sub/" ~ item.sub_name }}">{{ "sub/" ~ item.sub_name }}</a>
+            {% endif %}
+                {{ timeSince(item.created_at) }}
+                by {{ item.name }}
+            </p>
+            <a href="{{ "/post/" ~ item.post_id }}" style="font-size: small;">{{ item.count_comments ~ " comments"}}</a>
+        </div>
     </div>
 {% endmacro %}
 
-{% macro like(link_id, post_id, comment_id) %}
-    <form action="/newlike" method="post" style="float: left;">
-        <input type="hidden" name="positive" value=True>
-        <input type="hidden" name="link_id" value={{ link_id }}>
-        <input type="hidden" name="post_id" value={{ post_id }}>
-        <input type="hidden" name="comment_id" value={{ comment_id }}>
-        <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
-        <button>upvote</button>
-    </form>
-    <form action="/newlike" method="post" style="float: left;">
-        <input type="hidden" name="positive" value=False>
-        <input type="hidden" name="link_id" value={{ link_id }}>
-        <input type="hidden" name="post_id" value={{ post_id }}>
-        <input type="hidden" name="comment_id" value={{ comment_id }}>
-        <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
-        <button>downvote</button>
-    </form>
+{% macro like(link_id, post_id, comment_id, count) %}
+    <div class="col-md-auto">
+        <div class="container nopadding">
+        <form action="/newlike" method="post">
+            <input type="hidden" name="positive" value=True>
+            <input type="hidden" name="link_id" value={{ link_id }}>
+            <input type="hidden" name="post_id" value={{ post_id }}>
+            <input type="hidden" name="comment_id" value={{ comment_id }}>
+            <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
+            <button class="btn btn-outline-primary btn-sm">⬆️</button>
+        </form>
+        <div style="font-size:small;">{{ count ~ " points" }}</div>
+        <form action="/newlike" method="post">
+            <input type="hidden" name="positive" value=False>
+            <input type="hidden" name="link_id" value={{ link_id }}>
+            <input type="hidden" name="post_id" value={{ post_id }}>
+            <input type="hidden" name="comment_id" value={{ comment_id }}>
+            <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
+            <button class="btn btn-outline-primary btn-sm">️⬇️</button>
+        </form>
+        </div>
+    </div>
 {% endmacro %}

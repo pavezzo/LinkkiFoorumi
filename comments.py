@@ -6,14 +6,14 @@ def new(link_id, post_id, parent, comment):
     if not post_id: post_id = None
     if not parent: parent = None
     sql = """INSERT INTO comments (user_id, post_id, link_id, comment, parent, 
-             created_at) VALUES (:user_id, :post_id, :link_id, :comment, :parent,
-             NOW())"""
+             created_at, visible) VALUES (:user_id, :post_id, :link_id, :comment, :parent,
+             NOW(), TRUE)"""
     db.session.execute(sql, {"user_id":session["user_id"], "post_id":post_id,
             "link_id":link_id, "comment":comment, "parent":parent})
     db.session.commit()
 
 def get_for_link(link_id):
-    sql = """SELECT comment_id, comment, parent, created_at, name,
+    sql = """SELECT user_id, comment_id, comment, parent, created_at, visible, name,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
              FROM likes WHERE likes.comment_id=comments.comment_id) AS count_likes
              FROM comments 
@@ -23,7 +23,7 @@ def get_for_link(link_id):
     return comms
 
 def get_for_post(post_id):
-    sql = """SELECT comment_id, comment, parent, created_at, name,
+    sql = """SELECT user_id, comment_id, comment, parent, created_at, visible, name,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
              FROM likes WHERE likes.comment_id=comments.comment_id) AS count_likes
              FROM comments 
@@ -31,3 +31,13 @@ def get_for_post(post_id):
     results = db.session.execute(sql, {"post_id":post_id})
     comms = results.fetchall()
     return comms
+
+def get(comment_id):
+    sql = "SELECT user_id FROM comments WHERE comment_id=:comment_id"
+    result = db.session.execute(sql, {"comment_id":comment_id}).fetchone()
+    return result
+
+def delete(comment_id):
+    sql = "UPDATE comments SET visible=FALSE WHERE comment_id=:comment_id"
+    db.session.execute(sql, {"comment_id":comment_id})
+    db.session.commit()

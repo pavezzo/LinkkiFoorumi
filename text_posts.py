@@ -1,20 +1,24 @@
 from db import db
 from flask import session
+from sqlalchemy import exc
 import users
 import utils
 
 def new(sub_name, title, post_content):
-    sql = """INSERT INTO text_posts (user_id, subforum_id, title, post_content, created_at)
-             VALUES (:user_id, (SELECT sub_id FROM subforums WHERE sub_name=:sub_name),
-             :title, :post_content, NOW()) RETURNING post_id"""
-    result = db.session.execute(sql, {"user_id":session["user_id"], "sub_name":sub_name, "title":title, 
-                                "post_content":post_content})
-    post_id = result.fetchone()[0]
-    db.session.commit()
-    return post_id
+    try:
+        sql = """INSERT INTO text_posts (user_id, subforum_id, title, post_content, created_at)
+                 VALUES (:user_id, (SELECT sub_id FROM subforums WHERE sub_name=:sub_name),
+                 :title, :post_content, NOW()) RETURNING post_id"""
+        result = db.session.execute(sql, {"user_id":session["user_id"], "sub_name":sub_name, "title":title, 
+                                    "post_content":post_content})
+        post_id = result.fetchone()[0]
+        db.session.commit()
+        return post_id
+    except:
+        return False
 
 def get(post_id):
-    sql = """SELECT title, post_content, created_at, name FROM text_posts JOIN users ON user_id=id
+    sql = """SELECT user_id, title, post_content, created_at, name FROM text_posts JOIN users ON user_id=id
             WHERE post_id=:post_id"""
     result = db.session.execute(sql, {"post_id":post_id})
     post = result.fetchone()
@@ -29,3 +33,8 @@ def get_all():
     posts = results.fetchall()
 
     return posts
+
+def delete(post_id):
+    sql = "DELETE FROM text_posts WHERE post_id=:post_id"
+    db.session.execute(sql, {"post_id":post_id})
+    db.session.commit()

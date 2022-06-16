@@ -3,16 +3,16 @@ from db import db
 from flask import request, session
 
 def new(name, introduction):
-    if "user_id" not in session:
+    try:
+        sql = """INSERT INTO subforums (owner_id, sub_name, introduction, created_at)
+                 VALUES (:owner_id, :sub_name, :introduction, NOW())"""
+
+        db.session.execute(sql, {"owner_id":session["user_id"], "sub_name":name,
+                           "introduction":introduction})
+        db.session.commit()
+        return True
+    except:
         return False
-
-    sql = """INSERT INTO subforums (owner_id, sub_name, introduction, created_at)
-             VALUES (:owner_id, :sub_name, :introduction, NOW())"""
-
-    db.session.execute(sql, {"owner_id":session["user_id"], "sub_name":name,
-                       "introduction":introduction})
-    db.session.commit()
-    return True
 
 def get_by_name(name):
     sql = """SELECT sub_id, owner_id, introduction, name FROM subforums
@@ -73,4 +73,8 @@ def get_top(subforum_id):
     results = db.session.execute(sql, {"subforum_id":subforum_id})
     contents = results.fetchall()
     return contents
-    
+
+def get_subforums():
+    sql = """SELECT sub_name, introduction, created_at FROM subforums ORDER BY created_at DESC"""
+    results = db.session.execute(sql).fetchall()
+    return results

@@ -7,8 +7,16 @@
     Post:<br>
     <textarea name="post_content" rows="10" cols="50"></textarea><br>
     Subforum:<br>
-    <input type="text" name="sub_name" value={{ sub_name }}><br>
-    <input type="hidden" name="csrf_token" value="{{ session.csrf_token }}">
+    <select name="sub_name">
+        {% for sub in subs %}
+            {% if sub.sub_name == default %}
+                <option selected="selected" value={{ sub.sub_name }}>{{ sub.sub_name }}</option>
+            {% else %}
+                <option value={{ sub.sub_name }}>{{ sub.sub_name }}</option>
+            {% endif %}
+        {% endfor %}
+    </select><br>
+    <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
     <button>Submit</button>
 </form>
 {% endblock %}

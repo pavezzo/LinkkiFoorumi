@@ -1,4 +1,4 @@
-from flask import session, abort
+from flask import session, abort, Response
 import humanize
 import datetime as dt
 
@@ -12,7 +12,7 @@ def valid_csrf(token=None):
 
 def require_login():
     if "name" not in session or "user_id" not in session:
-        abort(403)
+        abort(Response("You need to be logged in to perform this function"))
 
-def timeSince(date):
+def time_since(date):
     return humanize.naturaltime(dt.datetime.now() - date)

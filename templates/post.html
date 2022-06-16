@@ -1,33 +1,14 @@
-{% from "macros.html" import comment_form, like %}
+{% from "macros.html" import comment, comment_form, like with context %}
 {% extends "layout.html" %}
 {% block content %}
 <h1>{{ title }}</h1>
 <p>{{ post_content }}</p>
-Posted at: {{ date }} by {{ name }}
+{{ time_since(date) }} by {{ name }}
 <br>{{ comment_form(post_id, "", "") }}
 <br>
 {% if comments %}
 {% for item in comments %}
-
-<div class="comment commentWrapper" parent_id={{ item.parent or "OP" }} id="{{ "comment" ~ item.comment_id }}" comment_id={{ item.comment_id }}>
-    <div class="row">
-        <div class="col-md-auto" buttons_id={{ item.comment_id }}>
-            {{ like("", "", item.comment_id, item.count_likes)}}
-        </div>
-        <div class="col nopadding">
-            <div class="nameBar">
-                <a href="javascript:void(0)" class="collapseButton" onclick="collapseComments(this)" target_id="{{ "content" ~ item.comment_id }}" target_childs={{ item.comment_id }}>[-]</a>
-                <span>{{ item.name }}</span>
-                <span>{{ item.created_at}}</span>
-                <span>{{ item.count_likes}} likes</span>
-            </div>
-            <div class="commentContent" id="{{"content" ~ item.comment_id}}">
-                <p class="commentText">{{ item.comment }}</p>
-                {{ comment_form(post_id, "", item.comment_id)}}
-            </div>
-        </div>
-    </div>
-</div>
+    {{ comment(item, post_id, "") }}
 {% endfor %}
 {% endif %}
 {% endblock %}

@@ -1,7 +1,7 @@
 .commentContent {
     padding-left: 2px;
     background: lightgreen;
-    opacity: 1;
+    overflow: hidden !important;
 }
 
 .commentWrapper {
@@ -9,7 +9,6 @@
     display: block;
     background: transparent !important;
     padding-top: 0.5%;
-    overflow: hidden;
 }
 
 .childComment {
@@ -60,4 +59,8 @@
 .nopadding {
     padding: 0 !important;
     margin: 0 !important;
+}
+
+.red {
+    color: red !important;
 }

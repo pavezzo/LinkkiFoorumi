@@ -1,3 +1,43 @@
+{% macro comment(item, post_id, link_id) %}
+<div class="comment commentWrapper" parent_id={{ item.parent or "OP" }} id="{{ "comment" ~ item.comment_id }}" comment_id={{ item.comment_id }}>
+    <div class="row">
+        <div class="col">
+            <div class="nameBar">
+                <a href="javascript:void(0)" class="collapseButton" onclick="collapseComments(this)" target_id="{{ "content" ~ item.comment_id }}" target_childs={{ item.comment_id }}>[-]</a>
+            {% if item.visible %}
+                <span>{{ item.name }}</span>
+                <span>{{ time_since(item.created_at) }}</span>
+                <span>{{ item.count_likes ~ " points" }}</span>
+            {% else %}
+                <span>[deleted]</span>
+            {% endif %}
+            </div>
+            <div class="commentContent" id="{{"content" ~ item.comment_id}}">
+            {% if item.visible %}
+                <p class="commentText">{{ item.comment }}</p>
+            {% else %}
+                <p class="commentText">[removed]</p>
+            {% endif %}
+            
+            {% if post_id and item.visible %}
+                {{ comment_form(post_id, "", item.comment_id) }}
+            {% elif link_id and item.visible %}
+                {{ comment_form("", link_id, item.comment_id) }}
+            {% endif %}
+            
+            {% if item.visible %}
+                {{ comment_vote(item.comment_id) }}
+            {% endif %}
+
+            {% if item.visible and (item.user_id == session.user_id or session.admin) %}
+                {{ delete_comment(item.comment_id) }}
+            {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endmacro %}
+
 {% macro comment_form(post_id, link_id, parent) %}
     {% if parent %}
         <a href="javascript:void(0)" class="replyButton" onclick="showCommentForm(this)" target_id={{ parent }}>Reply</a>
@@ -22,6 +62,17 @@
     {% endif %}
 {% endmacro %}
 
+{% macro delete_comment(comment_id) %}
+    <form style="display: none;" id="{{ "deletecomment" ~ comment_id }}" action="/deletecomment" method="post">
+        <input type="hidden" name="comment_id" value={{ comment_id }}>
+        <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
+    </form>
+    <a class="replyButton red" href="javascript:void(0)" 
+        onclick="{{ "document.getElementById('deletecomment" ~ comment_id ~ "').submit();" }}">
+            Delete
+    </a>
+{% endmacro %}
+
 {% macro link(item) %}
     <div class="col-md-auto">
         <div class="link">
@@ -30,12 +81,26 @@
             {% if item.sub_name %}
                 Submitted to: <a href="{{ "/sub/" ~ item.sub_name }}">{{ "sub/" ~ item.sub_name }}</a>
             {% endif %}
-                {{ timeSince(item.created_at) }}
+                {{ time_since(item.created_at) }}
                 by {{ item.name }}
             </p>
             <a href="{{ "/link/"  ~ item.link_id}}" style="font-size: small;">{{ item.count_comments ~ " comments"}}</a>
+        {% if session.user_id == item.owner_id or session.admin %}
+            {{ delete_link(item.link_id) }}   
+        {% endif %}
         </div>
     </div>
+{% endmacro %}
+
+{% macro delete_link(link_id) %}
+    <form style="display: none;" id="{{ "deletelink" ~ link_id }}" action="/deletelink" method="post">
+        <input type="hidden" name="link_id" value={{ link_id }}>
+        <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
+    </form>
+    <a class="replyButton red" href="javascript:void(0)"
+        onclick="{{ "document.getElementById('deletelink" ~ link_id ~ "').submit();" }}">
+        Delete
+    </a>
 {% endmacro %}
 
 {% macro post(item) %}
@@ -46,34 +111,73 @@
             {% if item.sub_name %}
                 Submitted to: <a href="{{ "/sub/" ~ item.sub_name }}">{{ "sub/" ~ item.sub_name }}</a>
             {% endif %}
-                {{ timeSince(item.created_at) }}
+                {{ time_since(item.created_at) }}
                 by {{ item.name }}
             </p>
             <a href="{{ "/post/" ~ item.post_id }}" style="font-size: small;">{{ item.count_comments ~ " comments"}}</a>
+        {% if session.user_id == item.owner_id or session.admin %}
+            {{ delete_post(item.post_id) }}  
+        {% endif %}
         </div>
     </div>
+{% endmacro %}
+
+{% macro delete_post(post_id) %}
+    <form style="display: none;" id="{{ "deletepost" ~ post_id }}" action="/deletepost" method="post">
+        <input type="hidden" name="post_id" value={{ post_id }}>
+        <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
+    </form>
+    <a class="replyButton red" href="javascript:void(0)"
+        onclick="{{ "document.getElementById('deletepost" ~ post_id ~ "').submit();" }}">
+        Delete
+    </a>
 {% endmacro %}
 
 {% macro like(link_id, post_id, comment_id, count) %}
     <div class="col-md-auto">
         <div class="container nopadding">
-        <form action="/newlike" method="post">
-            <input type="hidden" name="positive" value=True>
-            <input type="hidden" name="link_id" value={{ link_id }}>
-            <input type="hidden" name="post_id" value={{ post_id }}>
-            <input type="hidden" name="comment_id" value={{ comment_id }}>
-            <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
-            <button class="btn btn-outline-primary btn-sm">⬆️</button>
-        </form>
-        <div style="font-size:small;">{{ count ~ " points" }}</div>
-        <form action="/newlike" method="post">
-            <input type="hidden" name="positive" value=False>
-            <input type="hidden" name="link_id" value={{ link_id }}>
-            <input type="hidden" name="post_id" value={{ post_id }}>
-            <input type="hidden" name="comment_id" value={{ comment_id }}>
-            <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
-            <button class="btn btn-outline-primary btn-sm">️⬇️</button>
-        </form>
+            <form action="/newlike" method="post">
+                <input type="hidden" name="positive" value=True>
+                <input type="hidden" name="link_id" value={{ link_id }}>
+                <input type="hidden" name="post_id" value={{ post_id }}>
+                <input type="hidden" name="comment_id" value={{ comment_id }}>
+                <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
+                <button class="btn btn-outline-primary btn-sm">⬆️</button>
+            </form>
+            <div style="font-size:small;">{{ count ~ " points" }}</div>
+            <form action="/newlike" method="post">
+                <input type="hidden" name="positive" value=False>
+                <input type="hidden" name="link_id" value={{ link_id }}>
+                <input type="hidden" name="post_id" value={{ post_id }}>
+                <input type="hidden" name="comment_id" value={{ comment_id }}>
+                <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
+                <button class="btn btn-outline-primary btn-sm">️⬇️</button>
+            </form>
         </div>
     </div>
+{% endmacro %}
+
+{% macro comment_vote(comment_id) %}
+    <form id="{{ "upvotecomment" ~ comment_id }}" action="/newlike" method="post" style="display: none;">
+        <input type="hidden" name="positive" value=True>
+        <input type="hidden" name="link_id" value="">
+        <input type="hidden" name="post_id" value="">
+        <input type="hidden" name="comment_id" value={{ comment_id }}>
+        <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
+    </form>
+    <form id="{{ "downvotecomment" ~ comment_id }}" action="/newlike" method="post" style="display: none;">
+        <input type="hidden" name="positive" value=False>
+        <input type="hidden" name="link_id" value="">
+        <input type="hidden" name="post_id" value="">
+        <input type="hidden" name="comment_id" value={{ comment_id }}>
+        <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
+    </form>
+    <a class="replyButton" href="javascript:void(0)" 
+        onclick="{{ "document.getElementById('upvotecomment" ~ comment_id ~ "').submit();" }}">
+        ⬆️upvote
+    </a>
+    <a class="replyButton" href="javascript:void(0)"
+        onclick="{{ "document.getElementById('downvotecomment" ~ comment_id ~ "').submit();" }}">
+        ⬇️downvote
+    </a>
 {% endmacro %}

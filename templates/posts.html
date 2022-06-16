@@ -1,7 +1,0 @@
-{% extends "layout.html" %}
-{% block content %}
-{% for post in text_posts %}
-<br>
-<a href="{{ "/post/" ~ post.post_id }}">{{ post.title }}</a><br>
-{% endfor %}
-{% endblock %}

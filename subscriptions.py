@@ -31,7 +31,6 @@ def get_users_subscriptions():
              JOIN subforums ON subforum_id=sub_id WHERE user_id=:user_id"""
     results = db.session.execute(sql, {"user_id":session["user_id"]})
     subforums = results.fetchall()
-    print(subforums)
     return subforums
 
 def get_users_content():

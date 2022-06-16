@@ -37,7 +37,7 @@ def get_users_content():
     if "user_id" not in session:
         return False
 
-    sql = """SELECT links.link_id, NULL AS post_id, title, url, links.created_at, count(comment_id) AS count_comments,
+    sql = """SELECT links.link_id, NULL AS post_id, links.user_id AS owner_id, title, url, links.created_at, count(comment_id) AS count_comments,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
              FROM likes WHERE likes.link_id=links.link_id) AS count_likes,
              sub_name, users.name
@@ -47,7 +47,7 @@ def get_users_content():
              JOIN users ON users.id=links.user_id
              WHERE links.subforum_id IN (SELECT subforum_id FROM subscriptions WHERE user_id=:user_id)
              GROUP BY links.link_id, sub_name, users.name
-             UNION SELECT NULL AS link_id, text_posts.post_id, title, NULL AS url, text_posts.created_at, count(comment_id) AS count_comments,
+             UNION SELECT NULL AS link_id, text_posts.post_id, text_posts.user_id AS owner_id, title, NULL AS url, text_posts.created_at, count(comment_id) AS count_comments,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
              FROM likes WHERE likes.post_id=text_posts.post_id) AS count_likes,
              sub_name, users.name
@@ -65,7 +65,7 @@ def get_users_content_top():
     if "user_id" not in session:
         return False
 
-    sql = """SELECT links.link_id, NULL AS post_id, title, url, links.created_at, count(comment_id) AS count_comments,
+    sql = """SELECT links.link_id, NULL AS post_id, links.user_id AS owner_id, title, url, links.created_at, count(comment_id) AS count_comments,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
              FROM likes WHERE likes.link_id=links.link_id) AS count_likes,
              sub_name, users.name
@@ -75,7 +75,7 @@ def get_users_content_top():
              JOIN users ON users.id=links.user_id
              WHERE links.subforum_id IN (SELECT subforum_id FROM subscriptions WHERE user_id=:user_id)
              GROUP BY links.link_id, sub_name, users.name
-             UNION SELECT NULL AS link_id, text_posts.post_id, title, NULL AS url, text_posts.created_at, count(comment_id) AS count_comments,
+             UNION SELECT NULL AS link_id, text_posts.post_id, text_posts.user_id AS owner_id, title, NULL AS url, text_posts.created_at, count(comment_id) AS count_comments,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
              FROM likes WHERE likes.post_id=text_posts.post_id) AS count_likes,
              sub_name, users.name

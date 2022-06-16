@@ -25,7 +25,7 @@ def get_by_name(name):
     return False
 
 def get_newest(subforum_id):
-    sql = """SELECT links.link_id, NULL AS post_id, title, url, links.created_at, count(comment_id) AS count_comments,
+    sql = """SELECT links.link_id, NULL AS post_id, links.user_id AS owner_id, title, url, links.created_at, count(comment_id) AS count_comments,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
              FROM likes WHERE likes.link_id=links.link_id) AS count_likes,
              users.name
@@ -34,7 +34,7 @@ def get_newest(subforum_id):
              JOIN users ON users.id=links.user_id
              WHERE subforum_id=:subforum_id
              GROUP BY links.link_id, users.name
-             UNION SELECT NULL AS link_id, text_posts.post_id, title, NULL AS url, text_posts.created_at, 
+             UNION SELECT NULL AS link_id, text_posts.post_id, text_posts.user_id AS owner_id, title, NULL AS url, text_posts.created_at, 
              count(comment_id) AS count_comments,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
              FROM likes WHERE likes.post_id=text_posts.post_id) AS count_likes,
@@ -50,7 +50,7 @@ def get_newest(subforum_id):
     return contents
 
 def get_top(subforum_id):
-    sql = """SELECT links.link_id, NULL AS post_id, title, url, links.created_at, count(comment_id) AS count_comments,
+    sql = """SELECT links.link_id, NULL AS post_id, links.user_id AS owner_id, title, url, links.created_at, count(comment_id) AS count_comments,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
              FROM likes WHERE likes.link_id=links.link_id) AS count_likes,
              users.name
@@ -59,7 +59,7 @@ def get_top(subforum_id):
              JOIN users ON users.id=links.user_id
              WHERE subforum_id=:subforum_id
              GROUP BY links.link_id, users.name
-             UNION SELECT NULL AS link_id, text_posts.post_id, title, NULL AS url, text_posts.created_at, 
+             UNION SELECT NULL AS link_id, text_posts.post_id, text_posts.user_id AS owner_id, title, NULL AS url, text_posts.created_at, 
              count(comment_id) AS count_comments,
              (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
              FROM likes WHERE likes.post_id=text_posts.post_id) AS count_likes,

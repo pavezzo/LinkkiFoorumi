@@ -3,9 +3,9 @@
 <h1>Post new link</h1><br>
 <form action="/newlink", method="post">
     Title:<br>
-    <input type="text" name="title"><br>
+    <input type="text" name="title" maxlength="30" required><br>
     Link:<br>
-    <input type="text" name="link"><br>
+    <input type="text" name="link" required><br>
     Subforum:<br>
     <select name="sub_name">
     {% for sub in subs %}

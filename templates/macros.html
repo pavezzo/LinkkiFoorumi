@@ -42,7 +42,7 @@
     {% if parent %}
         <a href="javascript:void(0)" class="replyButton" onclick="showCommentForm(this)" target_id={{ parent }}>Reply</a>
         <form style="display: none;" action="/newcomment" method="post" id={{ parent }}>
-            <textarea name="comment" rows="5" cols="40"></textarea>
+            <textarea name="comment" rows="5" cols="40" maxlength="1000" required></textarea>
             <input type="hidden" name="post_id" value={{ post_id }}>
             <input type="hidden" name="link_id" value={{ link_id }}>
             <input type="hidden" name="parent" value={{ parent }}>
@@ -52,7 +52,7 @@
     {% else %}
         <a href="javascript:void(0)" class="replyButton" onclick="showCommentForm(this)" target_id="OP">Reply</a>
         <form style="display: none;" action="/newcomment" method="post" id="OP">
-            <textarea name="comment" rows="5" cols="40"></textarea>
+            <textarea name="comment" rows="5" cols="40" maxlength="1000" required></textarea>
             <input type="hidden" name="post_id" value={{ post_id }}>
             <input type="hidden" name="link_id" value={{ link_id }}>
             <input type="hidden" name="parent" value={{ comment_id }}>

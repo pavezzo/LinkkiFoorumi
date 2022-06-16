@@ -137,9 +137,9 @@ def new_subforum():
 @app.route("/sub/<string:name>")
 def view_subforum(name):
     result = subforums.get_by_name(name)
-    subbed = subscriptions.check_subscription(result.sub_id)
     if not result:
         abort(404)
+    subbed = subscriptions.check_subscription(result.sub_id)
     contents = subforums.get_newest(result.sub_id)
     return render_template("subforum.html", subforum_id=result.sub_id, sub_name=name, introduction=result.introduction, contents=contents, subbed=subbed)
 

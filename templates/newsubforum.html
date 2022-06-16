@@ -3,9 +3,9 @@
 <h1>Create new subforum</h1>
 <form action="/newsubforum", method="post">
     Name:<br>
-    <input type="text" name="sub_name"><br>
+    <input type="text" name="sub_name" maxlength="20" required><br>
     Introduction:<br>
-    <textarea name="introduction" rows="10" cols="50"></textarea><br>
+    <textarea name="introduction" rows="10" cols="50" maxlength="300" required></textarea><br>
     <input type="hidden" name="csrf_token" value={{ session.csrf_token }}>
     <button>Submit</button>
 </form>

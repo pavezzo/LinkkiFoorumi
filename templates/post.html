@@ -1,14 +1,19 @@
 {% from "macros.html" import comment, comment_form, like with context %}
 {% extends "layout.html" %}
 {% block content %}
-<h1>{{ title }}</h1>
-<p>{{ post_content }}</p>
-{{ time_since(date) }} by {{ name }}
-<br>{{ comment_form(post_id, "", "") }}
-<br>
+<div class="row">
+    {{ like("", post.post_id, "", post.count_likes) }}
+    <div class="col">
+        <p style="font-size: x-large;">{{ post.title }}</p>
+        <p>{{ post.post_content }}</p>
+        {{ time_since(post.created_at) }} by {{ post.name }}
+        <br>{{ comment_form(post.post_id, "", "") }}
+        <br>
+    </div>
+</div>
 {% if comments %}
 {% for item in comments %}
-    {{ comment(item, post_id, "") }}
+    {{ comment(item, post.post_id, "") }}
 {% endfor %}
 {% endif %}
 {% endblock %}

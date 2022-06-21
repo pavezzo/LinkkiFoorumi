@@ -22,11 +22,15 @@ def new(sub_name, title, url):
         return False
 
 def get(link_id):
-    sql = """SELECT user_id, title, url, created_at, name FROM links JOIN users ON user_id=id
+    sql = """SELECT link_id, user_id, title, url, created_at, name,
+             (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
+             FROM likes WHERE likes.link_id=:link_id) AS count_likes
+             FROM links JOIN users ON user_id=id
              WHERE link_id=:link_id"""
     result = db.session.execute(sql, {"link_id":link_id})
     link = result.fetchone()
     if link:
+        print(link)
         return link
     return False
 

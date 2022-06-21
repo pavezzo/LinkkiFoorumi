@@ -18,7 +18,10 @@ def new(sub_name, title, post_content):
         return False
 
 def get(post_id):
-    sql = """SELECT user_id, title, post_content, created_at, name FROM text_posts JOIN users ON user_id=id
+    sql = """SELECT post_id, user_id, title, post_content, created_at, name,
+            (SELECT COALESCE(SUM(CASE WHEN positive THEN 1 ELSE -1 END), 0)
+            FROM likes WHERE likes.post_id=:post_id) AS count_likes
+            FROM text_posts JOIN users ON user_id=id
             WHERE post_id=:post_id"""
     result = db.session.execute(sql, {"post_id":post_id})
     post = result.fetchone()

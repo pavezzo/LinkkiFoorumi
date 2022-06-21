@@ -1,7 +1,7 @@
 {% extends "layout.html" %}
 {% block content %}
 <form action="/register", method="post">
-    Username: <input type="text", name="username" maxlength="20" required><br>
+    Username: <input type="text", name="username" minlength="4" maxlength="20" required><br>
     Password: <input type="password", name="password" required><br>
     Admin: <input type="checkbox", name="admin"><br>
     <button>Submit</button>

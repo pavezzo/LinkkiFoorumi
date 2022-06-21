@@ -1,15 +1,19 @@
 {% from "macros.html" import comment, comment_form, like with context %}
 {% extends "layout.html" %}
 {% block content %}
-<br>
-<a href={{ url }} >{{ title }}</a><br>
-Posted at: {{ date }} by {{ name }}
-<br>
-{{ comment_form("", link_id, "") }}
-<br>
+<div class="row">
+    {{ like(link.link_id, "", "", link.count_likes) }}
+    <div class="col-md-auto">
+        <a href={{ link.url }} style="font-size: x-large;">{{ link.title }}</a><br>
+        <div>
+            {{ time_since(link.created_at) }} by {{ link.name }}
+        </div>
+        {{ comment_form("", link.link_id, "") }}
+    </div>
+</div>
 {% if comments %}
 {% for item in comments %}
-    {{ comment(item, "", link_id) }}
+    {{ comment(item, "", link.link_id) }}
 {% endfor %}
 {% endif %}
 {% endblock %}

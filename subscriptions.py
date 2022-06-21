@@ -24,9 +24,6 @@ def check_subscription(subforum_id):
     return False
 
 def get_users_subscriptions():
-    if "user_id" not in session:
-        return False
-
     sql = """SELECT subforum_id, sub_name, introduction FROM subscriptions
              JOIN subforums ON subforum_id=sub_id WHERE user_id=:user_id"""
     results = db.session.execute(sql, {"user_id":session["user_id"]})

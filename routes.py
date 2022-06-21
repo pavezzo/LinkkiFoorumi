@@ -26,12 +26,19 @@ def register():
         return render_template("register.html")
 
     if request.method == "POST":
-        if "admin" in request.form:
-            users.register(request.form["username"], request.form["password"], True)
-        else:
-            users.register(request.form["username"], request.form["password"], False)
+        if len(request.form["username"]) < 4 or len(request.form["password"]) < 4:
+            return render_template("error.html", error="too short username or password")
 
-        return redirect("/")
+        if "admin" in request.form:
+            if users.register(request.form["username"], request.form["password"], True):
+                return redirect("/")
+            else:
+                return render_template("error.html", error="username is already taken")
+        else:
+            if users.register(request.form["username"], request.form["password"], False):
+                return redirect("/")
+            else:
+                return render_template("error.html", error="username already taken")
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -41,7 +48,7 @@ def login():
         if users.login(request.form["username"], request.form["password"]):
             return redirect("/")
         else:
-            return render_template("error.html", error="Invalid username or password")
+            return render_template("error.html", error="invalid username or password")
 
 @app.route("/logout")
 def logout():
@@ -53,6 +60,7 @@ def newlink():
     if request.method == "GET":
         subs = subforums.get_subforums()
         return render_template("newlink.html", default=request.args.get("subforum"), subs=subs)
+
     if request.method == "POST":
         utils.require_login()
         utils.valid_csrf(request.form["csrf_token"])
@@ -60,18 +68,17 @@ def newlink():
         if link_id:
             return redirect("/link/"+str(link_id))
         else:
-            return render_template("error.html", error="Invalid submission")
+            return render_template("error.html", error="invalid submission")
 
 @app.route("/link/<int:id>")
 def link(id):
     result = links.get(id)
 
     if not result:
-        return render_template("error.html", error="Link doesn't exist")
+        return render_template("error.html", error="link doesn't exist")
 
     comms = comments.get_for_link(id)
-    return render_template("link.html", link_id=id, title=result.title, url=result.url, 
-                    date=result.created_at, name=result.name, comments=comms)
+    return render_template("link.html", link=result, comments=comms)
 
 @app.route("/newpost", methods=["GET", "POST"])
 def new_post():
@@ -86,18 +93,17 @@ def new_post():
         if post_id:
             return redirect("/post/" + str(post_id))
         else:
-            return render_template("error.html", error="Invalid submission")
+            return render_template("error.html", error="invalid submission")
 
 @app.route("/post/<int:id>")
 def post(id):
     result = text_posts.get(id)
 
     if not result:
-        return render_template("error.html", error="Post doesn't exist")
+        return render_template("error.html", error="post doesn't exist")
 
     comms = comments.get_for_post(id)
-    return render_template("post.html", post_id=id, title=result.title, post_content=result.post_content,
-            name=result.name, date=result.created_at, comments=comms)
+    return render_template("post.html", post=result, comments=comms)
 
 @app.route("/sub/all")
 def all_newest():
@@ -113,14 +119,11 @@ def all_top():
 def new_comment():
     utils.require_login()
     utils.valid_csrf(request.form["csrf_token"])
-    comments.new(request.form["link_id"], request.form["post_id"], request.form["parent"],
-                request.form["comment"])
-    if request.form["link_id"]:
-        link_url = "/link/" + request.form["link_id"]
-        return redirect(link_url)
-    if request.form["post_id"]:
-        post_url = "/post/" + request.form["post_id"]
-        return redirect(post_url)
+    if comments.new(request.form["link_id"], request.form["post_id"], request.form["parent"],
+                request.form["comment"]):
+        return redirect(request.referrer)
+    else:
+        return render_template("error.html", error="invalid submission")
 
 @app.route("/newsubforum", methods=["GET", "POST"])
 def new_subforum():
@@ -166,14 +169,13 @@ def unsubscribe():
     utils.require_login()
     utils.valid_csrf(request.form["csrf_token"])
     subscriptions.unsubscribe(request.form["subforum_id"])
-    url = "/sub/" + request.form["subforum"]
-    return redirect(url)
+    return redirect(request.referrer)
 
 @app.route("/subscriptions", methods=["get"])
 def show_subscriptions():
     utils.require_login()
     subforums = subscriptions.get_users_subscriptions()
-    return render_template("subscriptions.html", subforums=subforums)
+    return render_template("subscriptions.html", items=subforums)
 
 @app.route("/newlike", methods=["post"])
 def newlike():

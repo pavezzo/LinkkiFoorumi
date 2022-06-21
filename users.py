@@ -13,7 +13,7 @@ def register(name, password, admin=False):
     except:
         return False
 
-    login(name, password)
+    return login(name, password)
 
 def login(name, password):
     sql = "SELECT id, password, admin FROM users WHERE name=:name"

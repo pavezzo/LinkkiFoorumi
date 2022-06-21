@@ -5,12 +5,20 @@ def new(link_id, post_id, parent, comment):
     if not link_id: link_id = None
     if not post_id: post_id = None
     if not parent: parent = None
-    sql = """INSERT INTO comments (user_id, post_id, link_id, comment, parent, 
-             created_at, visible) VALUES (:user_id, :post_id, :link_id, :comment, :parent,
-             NOW(), TRUE)"""
-    db.session.execute(sql, {"user_id":session["user_id"], "post_id":post_id,
-            "link_id":link_id, "comment":comment, "parent":parent})
-    db.session.commit()
+
+    if link_id is post_id is None:
+        return False
+
+    try:
+        sql = """INSERT INTO comments (user_id, post_id, link_id, comment, parent, 
+                 created_at, visible) VALUES (:user_id, :post_id, :link_id, :comment, :parent,
+                 NOW(), TRUE)"""
+        db.session.execute(sql, {"user_id":session["user_id"], "post_id":post_id,
+                "link_id":link_id, "comment":comment, "parent":parent})
+        db.session.commit()
+        return True
+    except:
+        return False
 
 def get_for_link(link_id):
     sql = """SELECT user_id, comment_id, comment, parent, created_at, visible, name,

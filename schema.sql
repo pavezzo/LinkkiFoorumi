@@ -35,10 +35,10 @@ CREATE TABLE text_posts (
 
 CREATE TABLE comments (
     comment_id SERIAL PRIMARY KEY,
-    user_id INT REFERENCES users ON DELETE CASCADE,
+    user_id INT REFERENCES users NOT NULL,
     post_id INT REFERENCES text_posts ON DELETE CASCADE,
     link_id INT REFERENCES links ON DELETE CASCADE,
-    comment VARCHAR(1000),
+    comment VARCHAR(1000) NOT NULL,
     parent INT REFERENCES comments,
     created_at TIMESTAMP,
     visible BOOLEAN

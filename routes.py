@@ -119,6 +119,7 @@ def all_top():
 def new_comment():
     utils.require_login()
     utils.valid_csrf(request.form["csrf_token"])
+
     if comments.new(request.form["link_id"], request.form["post_id"], request.form["parent"],
                 request.form["comment"]):
         return redirect(request.referrer)
@@ -161,8 +162,7 @@ def new_subscription():
     utils.require_login()
     utils.valid_csrf(request.form["csrf_token"])
     subscriptions.new(request.form["subforum_id"])
-    url = "/sub/" + request.form["subforum"]
-    return redirect(url)
+    return redirect(request.referrer)
 
 @app.route("/unsubscribe", methods=["post"])
 def unsubscribe():
@@ -193,13 +193,13 @@ def deletepost():
     post = text_posts.get(request.form["post_id"])
 
     if not post:
-        return render_template("error.html", error="Post doesn't exist")
+        return render_template("error.html", error="post doesn't exist")
 
     if post.user_id == session["user_id"] or session["admin"]:
         text_posts.delete(request.form["post_id"])
         return redirect(request.referrer)
     else:
-        return render_template("error.html", error="You don't have the rights to delete this post")
+        return render_template("error.html", error="you don't have the rights to delete this post")
 
 @app.route("/deletelink", methods=["post"])
 def deletelink():
@@ -208,13 +208,13 @@ def deletelink():
     link = links.get(request.form["link_id"])
 
     if not link:
-        return render_template("error.html", error="Link doesn't exist")
+        return render_template("error.html", error="link doesn't exist")
 
     if link.user_id == session["user_id"] or session["admin"]:
         links.delete(request.form["link_id"])
         return redirect("/")
     else:
-        return render_template("error.html", error="You don't have the rights to delete this link")
+        return render_template("error.html", error="you don't have the rights to delete this link")
 
 @app.route("/deletecomment", methods=["post"])
 def deletecomment():
@@ -223,13 +223,13 @@ def deletecomment():
     comment = comments.get(request.form["comment_id"])
 
     if not comment:
-        return render_template("error.html", error="Comment doesn't exist")
+        return render_template("error.html", error="comment doesn't exist")
     
     if comment.user_id == session["user_id"] or session["admin"]:
         comments.delete(request.form["comment_id"])
         return redirect(request.referrer)
     else:
-        return render_template("error.html", error="You don't have the rights to delete this comment")
+        return render_template("error.html", error="you don't have the rights to delete this comment")
 
 @app.route("/subforums", methods=["get"])
 def get_subforums():

@@ -15,6 +15,8 @@ CREATE TABLE subforums (
     created_at TIMESTAMP
 );
 
+ALTER TABLE subforums ADD CONSTRAINT no_spaces CHECK (sub_name ~ '^[a-zA-Z0-9_-]+$');
+
 CREATE TABLE links (
     link_id SERIAL PRIMARY KEY,
     user_id INT REFERENCES users NOT NULL,

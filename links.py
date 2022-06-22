@@ -30,7 +30,6 @@ def get(link_id):
     result = db.session.execute(sql, {"link_id":link_id})
     link = result.fetchone()
     if link:
-        print(link)
         return link
     return False
 

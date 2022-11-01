@@ -64,6 +64,10 @@ def newlink():
     if request.method == "POST":
         utils.require_login()
         utils.valid_csrf(request.form["csrf_token"])
+
+        if request.form["title"].isspace():
+            return render_template("error.html", error="title must be visible")
+
         link_id = links.new(request.form["sub_name"], request.form["title"], request.form["link"])
         if link_id:
             return redirect("/link/"+str(link_id))
@@ -89,6 +93,10 @@ def new_post():
     if request.method == "POST":
         utils.require_login()
         utils.valid_csrf(request.form["csrf_token"])
+        
+        if request.form["title"].isspace():
+            return render_template("error.html", error="title must be visible")
+
         post_id = text_posts.new(request.form["sub_name"], request.form["title"], request.form["post_content"])
         if post_id:
             return redirect("/post/" + str(post_id))
